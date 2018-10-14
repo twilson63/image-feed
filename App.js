@@ -1,15 +1,29 @@
 import React from 'react'
 import { Constants } from 'expo'
 
-import { Platform, StyleSheet, View, Modal } from 'react-native'
+import { AsyncStorage, Platform, StyleSheet, View, Modal } from 'react-native'
 import Feed from './pages/Feed'
 import Comments from './pages/Comments'
+
+const ASYNC_STORAGE_COMMENTS_KEY = 'ASYNC_STORAGE_COMMENTS_KEY'
 
 export default class App extends React.Component {
   state = {
     commentsForItem: {},
     showModal: false,
     selectedItemId: null
+  }
+  async componentDidMount() {
+    try {
+      const commentsForItem = await AsyncStorage.getItem(
+        ASYNC_STORAGE_COMMENTS_KEY
+      )
+      this.setState({
+        commentsForItem: commentsForItem ? JSON.parse(commentsForItem) : {}
+      })
+    } catch (e) {
+      console.log('ERROR: failed to load comments!')
+    }
   }
   render() {
     const { commentsForItem, showModal, selectedItemId } = this.state
